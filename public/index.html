@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+   <head>
+      <meta charset="UTF-8">
+      <title>React App</title><script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
+   </head>
+
+   <body>
+      <div id="root"></div>
+      <script src="js/bundle.js"></script>
+      <script>
+
+          var ws = new WebSocket("ws://127.0.0.1:9000");
+
+          ws.onopen = function(message) {
+                console.log(message)
+              ws.send('111')
+          };
+          ws.onclose = function(message) {
+              console.log(message)
+          };
+          ws.onmessage = function(message) {
+              showMessage(message.data);
+          };
+          function showMessage(message) {
+              console.log(message)
+          }
+      </script>
+
+   </body>
+<script>
+    $(document).ready(function () {
+        $('#send').click(function () {
+            ws.send($('#msg').val());
+        })
+    })
+</script>
+
+</html>
