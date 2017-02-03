@@ -21541,12 +21541,10 @@
 	                    null,
 	                    "Hello React Skeleton"
 	                ),
-	                _react2.default.createElement("input", { type: "text", id: "msg" }),
-	                " ",
 	                _react2.default.createElement(
 	                    "button",
 	                    { id: "send" },
-	                    "SEND"
+	                    "Throw"
 	                )
 	            );
 	        }

@@ -1,40 +1,77 @@
 <!DOCTYPE html>
 <html>
 
-   <head>
-      <meta charset="UTF-8">
-      <title>React App</title><script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
-   </head>
+<head>
+    <meta charset="UTF-8">
+    <title>React App</title>
+    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
+</head>
 
-   <body>
-      <div id="root"></div>
-      <script src="js/bundle.js"></script>
-      <script>
+<body>
+<div id="root"></div>
+<script src="js/bundle.js"></script>
+<script>
 
-          var ws = new WebSocket("ws://127.0.0.1:9000");
+    var ws = new WebSocket("ws://127.0.0.1:9000");
 
-          ws.onopen = function(message) {
-                console.log(message)
-              ws.send('111')
-          };
-          ws.onclose = function(message) {
-              console.log(message)
-          };
-          ws.onmessage = function(message) {
-              showMessage(message.data);
-          };
-          function showMessage(message) {
-              console.log(message)
-          }
-      </script>
+    ws.onopen = function (message) {
+        console.log(message)
+        ws.send('open')
+    };
+    ws.onclose = function (message) {
+        console.log(message)
+        // ws.send('close')
 
-   </body>
+    };
+
+    ws.onmessage = function (message) {
+        showMessage(message.data);
+    };
+
+    function showMessage(message) {
+        console.log(message)
+        try {
+            var json = JSON.parse(message);
+            if (json.max != undefined) {
+
+
+                if (json.dice < json.max) {
+                    alert('You lost the game!!!')
+                    return
+                }
+                if (json.draw == 1 && json.dice == json.max) {
+                    alert('You draw the game!!!')
+                    return;
+                }
+                if (json.dice == json.max) {
+                    alert('You won the game!!!')
+                    return
+                }
+            }
+        } catch (e) {
+            console.log(e.message);
+        }
+
+    }
+</script>
+
+</body>
 <script>
     $(document).ready(function () {
         $('#send').click(function () {
-            ws.send($('#msg').val());
+            ws.send('throw');
         })
     })
 </script>
 
+<script>
+    if ('registerElement' in document
+        && 'createShadowRoot' in HTMLElement.prototype
+        && 'import' in document.createElement('link')
+        && 'content' in document.createElement('template')) {
+        // We're using a browser with native WC support!
+    } else {
+        document.write('<script src="https:\/\/cdnjs.cloudflare.com/ajax/libs/polymer/0.3.4/platform.js"><\/script>')
+    }
+</script>
 </html>
