@@ -60,9 +60,6 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var rootElement = document.getElementById('root');
-	_reactDom2.default.render(_react2.default.createElement(_App2.default, null), rootElement);
-
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
@@ -21501,7 +21498,7 @@
 /* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -21531,20 +21528,15 @@
 	    }
 
 	    _createClass(App, [{
-	        key: "render",
+	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
-	                "div",
+	                'div',
 	                null,
 	                _react2.default.createElement(
-	                    "h1",
+	                    'h1',
 	                    null,
-	                    "Hello React Skeleton"
-	                ),
-	                _react2.default.createElement(
-	                    "button",
-	                    { id: "send" },
-	                    "Throw"
+	                    'Hello React Skeleton'
 	                )
 	            );
 	        }
