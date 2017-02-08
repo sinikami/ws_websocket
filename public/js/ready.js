@@ -64,6 +64,7 @@ $(document).ready(function () {
         } else {
             client.play($(this).attr('rps'));
             $('div.rps').addClass('disable')
+            $('#mine span').addClass($(this).attr('rps'))
         }
     })
     $('.restart').click(function () {

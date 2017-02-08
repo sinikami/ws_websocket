@@ -145,6 +145,7 @@ WS.prototype.printUsers = function (data) {
 WS.prototype.showMessage = function (message) {
 
     try {
+        var _this = this;
         var json = JSON.parse(message);
         if (json.error == 1) {
             alert(json.msg)
@@ -172,7 +173,7 @@ WS.prototype.showMessage = function (message) {
             case 'init':
                 this.playState = json.state;
                 $('#log').text(json.msg);
-                var _this = this;
+
                 if (!this.isInit) {
                     $('#play').modal('show');
                     $('#play').on('hidden.bs.modal', function () {
@@ -186,6 +187,19 @@ WS.prototype.showMessage = function (message) {
             case 'play' :
                 this.playState = json.state;
                 $('#log').text(json.msg);
+                if(json.state==2){
+
+                    $.each(json.data,function (idx,rps) {
+                        if(idx!=_this.userId){
+                            $('#other span').addClass(rps);
+                        }
+                    })
+                    if(json.winner==_this.userId) {
+                        console.log('You win!!!')
+                    }else{
+                        console.log('You are loser!!!')
+                    }
+                }
                 break;
             case 'join':
                 this.joinedRoomId=json.data.roomId;

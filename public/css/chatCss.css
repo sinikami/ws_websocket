@@ -121,6 +121,47 @@ div.disable span.p {
 div.disable span.s {
     background-image:url( "/img/slice_0_2b.png");
 }
+
 ul {
     list-style: none;
+}
+#game{
+    text-align: center;
+    padding-top: 10px;
+}
+#game div{
+    height: 150px;
+    text-align: center;
+}
+div#mine span,div#other span{
+    display:inline-block;
+    width: 100px;
+    height: 100px;
+    background-size: 100px 100px;
+    background-repeat: no-repeat;
+}
+div#other span{
+    -webkit-transform: rotate(-180deg);
+    -moz-transform: rotate(-180deg);
+    -ms-transform: rotate(-180deg);
+    -o-transform: rotate(-180deg);
+    transform: rotate(-180deg);
+}
+div#mine span.R{
+    background-image:url("/img/slice_0_0.png");
+}
+div#mine span.P{
+    background-image:url("/img/slice_0_1.png");
+}
+div#mine span.S{
+    background-image:url("/img/slice_0_2.png");
+}
+div#other span.R{
+    background-image:url("/img/slice_0_0.png");
+}
+div#other span.P{
+    background-image:url("/img/slice_0_1.png");
+}
+div#other span.S{
+    background-image:url("/img/slice_0_2.png");
 }
