@@ -93,16 +93,33 @@ div{
 }
 #create_room{
     clear:both;display: block;width: 100%;margin-top: 10px;padding-bottom:10px;border-bottom:1px solid #f2f2f2;
-    height: 50px;
-}
-#create_room input{
-    width: 20%;
-    float: right;
-    margin-right: 5px;
-}
-#create_room button{
-    float: right;
 
+}
+div.rps span{
+    display:inline-block;
+    width: 60px;
+    height: 60px;
+    background-size: 60px 60px;
+    background-repeat: no-repeat;
+}
+div.rps span.r{
+    background-image:url("/img/slice_0_0.png");
+
+}
+div.rps span.p{
+    background-image:url("/img/slice_0_1.png");
+}
+div.rps span.s{
+    background-image:url("/img/slice_0_2.png");
+}
+div.disable span.r {
+    background-image:url("/img/slice_0_0b.png");
+}
+div.disable span.p {
+    background-image:url("/img/slice_0_1b.png");
+}
+div.disable span.s {
+    background-image:url( "/img/slice_0_2b.png");
 }
 ul {
     list-style: none;
