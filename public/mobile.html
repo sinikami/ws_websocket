@@ -16,41 +16,19 @@
     <link href="css/chatCss.css" type="text/css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-
 <body>
+<div class="container">
 
-<div id="main">
-    <div id="info">
-        <div id="chat" class="panel panel-primary">
-            <ul class="panel-body">
-            </ul>
-            <div class="panel-footer">
-                <input class="form-control" id="chatMsg" type="text" value="" placeholder="chatting message"/>
-                <button class="btn btn-default" id="sendMsg"> Send</button>
-            </div>
+    <div id="create_room" class="jumbotron form-inline">
+        <div class="form-group">
+            <input type="text" id="roomName" class="form-control" placeholder="Room Name" value=""/>
         </div>
-        <div id="user_list" class="panel panel-primary">
-            <ul class="panel-body">
-
-            </ul>
-            <div id="setting" align="right" class="panel-footer">
-                <p> UserName : <input type="text" id="userId" placeholder="UserName" value=""/></p>
-                <p> Message : <input type="text" id="message" placeholder="Declaration of victory" value=""/></p>
-                <button class="btn btn-default" id="login">Setting</button>
-                <!--button>Logout</button-->
-            </div>
-        </div>
-    </div>
-    <div align="right" id="create_room">
         <button class="btn btn-default" id="create">Create a room</button>
-        <input type="text" id="roomName" class="form-control" placeholder="Room Name" value=""/>
-
     </div>
-    <div id="room_list" class="well">
+    <div id="room_list" class=" list-group">
 
 
     </div>
-
 </div>
 <div id="play" class="modal fade bs-example-modal-sm" tabindex="-1" data-backdrop="static" role="dialog"
      aria-labelledby="myLargeModalLabel">
@@ -64,7 +42,7 @@
             </div>
             <div class="modal-body">
                 <div id="scene" style="height: 400px;background: #000">
-                    <div style="height: 300px">
+                    <div style="height: 320px">
 
                     </div>
                     <div class="rps" align="center" style="text-align: center">
@@ -86,10 +64,9 @@
         </div>
     </div>
 </div>
-
-
 </body>
-<script src="js/bundle.js"></script>
+</html>
+
 <script src="js/client.js"></script>
 <script src="js/ready.js"></script>
 <script>
@@ -106,21 +83,5 @@
     });
 
 
-    //////
-    // var url = 'ws://192.168.25.61:9000';
-
-
 
 </script>
-
-<!--<script>
-    if ('registerElement' in document
-        && 'createShadowRoot' in HTMLElement.prototype
-        && 'import' in document.createElement('link')
-        && 'content' in document.createElement('template')) {
-        // We're using a browser with native WC support!
-    } else {
-        document.write('<script src="https:\/\/cdnjs.cloudflare.com/ajax/libs/polymer/0.3.4/platform.js"><\/script>')
-    }
-</script>-->
-</html>

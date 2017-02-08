@@ -70,12 +70,14 @@ wss.on('connection', function (ws) {
                 }
                 //msg.id = Object.keys(rooms) + 1;
                 msg.roomId = ws.userId;
-                rooms[ws.userId]={};
+                ws.joinRoomId = msg.roomId;
+                rooms[ws.userId] = {};
                 rooms[ws.userId].roomId = msg.roomId;
                 rooms[ws.userId].roomName = msg.roomName;
                 rooms[ws.userId].rootId = ws.userId;
                 rooms[ws.userId].client = [];
                 rooms[ws.userId].state = 0;
+                rooms[ws.userId].count = 0;
                 rooms[ws.userId].client.push(ws);
 
                 ws.response.msg = 'You just created a room.';
@@ -94,27 +96,34 @@ wss.on('connection', function (ws) {
                 sendAll(ws.response)
                 break;
             case 'join':
+                ws.response.mode = msg.command;
                 if (rooms.hasOwnProperty(ws.roomId)) delete rooms[ws.roomId];
-                if(msg.roomId == undefined){
+                if (msg.roomId == undefined) {
                     ws.response.msg = '방을 선택하세요.';
-                    ws.response.mode = msg.command;
                     ws.response.error = 1
                     send(ws);
                     return;
                 }
-                if (ws.joinRoomId != undefined && ws.joinRoomId == msg.roomId) {
-                    ws.response.msg = 'You are already in the room.';
-                    ws.response.mode = msg.command;
-                    ws.response.error = 1
-                    send(ws);
-                    return;
-                }
-                if ( rooms.hasOwnProperty(ws.joinRoomId) && ws.joinRoomId != msg.roomId) {
+                if (rooms.hasOwnProperty(ws.joinRoomId)) {// 다른 방에 있을 경우 삭제
                     let idx = rooms[ws.joinRoomId].client.indexOf(ws);
-                    if (idx != -1) rooms[ws.joinRoomId].client.splice(idx, 1);
+                    if (idx != -1) {
+                        ws.response.mode = 'leave';
+                        ws.response.msg = ws.userName + " left room.";
+                        rooms[ws.joinRoomId].client.splice(idx, 1);
+                        if( rooms[ws.joinRoomId].client.length == 1) rooms[ws.joinRoomId].state = 0;
+                        ws.response.data.list = {
+                            roomId: ws.joinRoomId,
+                            roomName: rooms[ws.joinRoomId].roomName,
+                            players: rooms[ws.joinRoomId].client.length,
+                            state:  rooms[ws.joinRoomId].state
+                        }
+
+                        sendRoomUsers(ws.joinRoomId, ws.response);
+                    }
 
                 }
-               if (rooms.hasOwnProperty(msg.roomId)) {
+                ws.response.mode = msg.command;
+                if (rooms.hasOwnProperty(msg.roomId)) { // 새로운 방에 가입
                     rooms[msg.roomId].client.push(ws);
                     ws.joinRoomId = msg.roomId;
                     ws.response.msg = 'You have just joined room.' + rooms[msg.roomId].roomName;
@@ -126,13 +135,13 @@ wss.on('connection', function (ws) {
                         state: 0
                     }
                     sendRoomUsers(msg.roomId, ws.response);
-               }else{
-                   ws.response.msg = 'The room does not exist.';
-                   ws.response.mode = msg.command;
-                   ws.response.error = 1
-                   send(ws);
-                   return;
-               }
+                } else {
+                    ws.response.msg = 'The room does not exist.';
+                    ws.response.mode = msg.command;
+                    ws.response.error = 1
+                    send(ws);
+                    return;
+                }
                 break
             case 'chat':
                 ws.response.mode = msg.command;
@@ -143,20 +152,7 @@ wss.on('connection', function (ws) {
             case 'play':
                 play(ws, msg);
                 break;
-            case 'init':
-                if (ws.userId == rooms[ws.room].rootId && rooms[ws.room].state == 2) {
-                    rooms[ws.room].count = 0;
-                    rooms[ws.room].state = 1;
-                }
-                ws.response.msg = 'Game Start!!!' + rooms[msg.id].name;
-                ws.response.data = {
-                    roomId: rooms[ws.room].roomId,
-                    roomName: rooms[ws.room].roomName,
-                    players: rooms[ws.room].client.length,
-                    state: 1
-                }
-                sendAll(ws.response)
-                break;
+
             case 'rooms':
                 ws.response.msg = "all rooms";
                 let list = [];
@@ -179,7 +175,61 @@ wss.on('connection', function (ws) {
                 ws.response.mode = msg.command;
                 send(ws)
                 break;
+            case 'init':
+                ws.response.mode = msg.command;
+                if (rooms[msg.roomId].rootId == ws.userId) {
+                    if (rooms[msg.roomId].client.length > 1 && rooms[msg.roomId].state != 1) {
+                        rooms[msg.roomId].state = 1;
+                        rooms[msg.roomId].count = 0;
+                        rooms[msg.roomId].data = {};
+                        rooms[msg.roomId].winner = {};
 
+                        ws.response.data = {
+                            roomId: msg.roomId,
+                            roomName: rooms[msg.roomId].roomName,
+                            players: rooms[msg.roomId].client.length,
+                            state: 1
+                        }
+                        ws.response.msg = 'Game Start!!!' + rooms[msg.roomId].roomName;
+                        sendRoomUsers(msg.roomId, ws.response);
+                    } else {
+                        ws.response.error = 1;
+                        ws.response.msg = "Game is playing.";
+                        send(ws);
+                    }
+                } else {
+                    ws.response.error = 1;
+                    ws.response.msg = "You do not have permission.";
+                    send(ws);
+                }
+                break
+            case 'leave':
+                ws.response.mode = msg.command;
+                let roomId=ws.joinRoomId;
+                if (rooms[roomId].rootId == ws.userId) {
+                    rooms[roomId].client.map(function (cli,idx) {
+                        if(cli.userId != ws.userId) {
+                            rooms[roomId].client.splice(idx,1) ;
+                        }
+                    })
+
+                } else {
+                    if (rooms.hasOwnProperty(roomId)) {
+                        rooms[roomId].client.splice(rooms[roomId].client.indexOf(ws), 1);
+                        ws.joinRoomId='';
+                    }
+                    ws.response.msg = ws.userName + " left room.";
+                }
+                if( rooms[roomId].client.length == 1) rooms[roomId].state = 0;
+                ws.response.data = {
+                    roomId: roomId,
+                    roomName: rooms[roomId].roomName,
+                    players: rooms[roomId].client.length,
+                    state:  rooms[roomId].state
+                }
+
+                sendRoomUsers(roomId, ws.response);
+                break;
         }
         /*  console.log(clients.length + '/' + dices.length)
          if (dices.length == clients.length) {
@@ -190,8 +240,8 @@ wss.on('connection', function (ws) {
 
 
     ws.on('close', function () {
-        if( rooms.hasOwnProperty(ws.userId)) delete rooms[ws.userId];
-        if( rooms.hasOwnProperty(ws.joinRoomId)) rooms[ws.joinRoomId].client.splice(rooms[ws.joinRoomId].client.indexOf(ws),1);
+        if (rooms.hasOwnProperty(ws.userId)) delete rooms[ws.userId];
+        if (rooms.hasOwnProperty(ws.joinRoomId)) rooms[ws.joinRoomId].client.splice(rooms[ws.joinRoomId].client.indexOf(ws), 1);
         clients.splice(clients.indexOf(ws), 1);
         //rooms.splice(rooms.indexOf(ws.userId),1);
         notice();
@@ -246,18 +296,53 @@ function sendRoomUsers(roomId, response) {
         client.send(JSON.stringify(response))
     })
 }
+
 function play(client, msg) {
     client.rps = msg.rps;
-    rooms[client.room].count++;
+    client.response.data = {};
+    let rps = {'R': 1, 'P': 2, 'S': 3};
+    client.response.mode = msg.command;
+    if (rooms[client.joinRoomId].state != 1) {
+        client.response.error = 1;
+        client.response.msg = "Not available to play. Waiting for owner restart. ";
+        client.response.data = {};
+        send(client);
+    } else {
 
-    if (rooms[client.room].count == clients.length) {
-        rooms[client.room].state = 2;
+        if (!rooms[client.joinRoomId].data.hasOwnProperty(client.userId)) {
+            rooms[client.joinRoomId].count++;
+            rooms[client.joinRoomId].state = 1;
+            rooms[client.joinRoomId].data[client.userId] = msg.rps;
+            rooms[client.joinRoomId].winner[msg.rps] = client.userId;
+        }
+        if (rooms[client.joinRoomId].count == rooms[client.joinRoomId].client.length) {
+            rooms[client.joinRoomId].state = 2;
+            client.response.state = 2;
+            client.response.data = rooms[client.joinRoomId].data;
+            client.response.msg = "Done.";
+            let sum = 0;
+            for (let idx in rooms[client.joinRoomId].winner) {
+                sum += rps[idx];
+            }
+            switch (sum) {
+                case 3:
+                    client.response.winner = rooms[client.joinRoomId].winner['P'];
+                    break;
+                case 4:
+                    client.response.winner = rooms[client.joinRoomId].winner['R'];
+                    break;
+                case 5:
+                    client.response.winner = rooms[client.joinRoomId].winner['S'];
+                    break;
 
-        clients.map(function (client) {
-            //client.readyState === WebSocket.OPEN
-            //response.data = {user: user, msg: msg};
-            client.send(JSON.stringify(response))
-        })
+            }
+            sendRoomUsers(client.joinRoomId, client.response);
+        } else {
+            client.response.state = 1;
+            client.response.msg = "Waiting for result";
+            send(client);
+        }
+
     }
 }
 function gameResult() {
