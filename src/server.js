@@ -38,7 +38,7 @@ wss.on('connection', function (ws) {
                 dices.push(ws.dice);
                 send(ws)
                 break;
-            case 'login':
+            case 'setting':
                 if (msg.userName == undefined) {
                     msg.userName = "user" + clients.length;
                 }

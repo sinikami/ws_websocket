@@ -129,7 +129,7 @@ ul {
     text-align: center;
     padding-top: 10px;
 }
-#game div{
+#game div#mine,#game div#other{
     height: 150px;
     text-align: center;
 }

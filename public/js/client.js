@@ -29,9 +29,9 @@ WS.prototype.connect = function (callback) {
         };
     }
 }
-WS.prototype.login = function (userName, msg, callback) {
+WS.prototype.setting = function (userName, msg, callback) {
     var request = {};
-    request.command = 'login';
+    request.command = 'setting';
     request.userName = userName;
     request.message = msg;
     this.send(request);
@@ -167,7 +167,7 @@ WS.prototype.showMessage = function (message) {
                 this.userId = json.data.userId;
                 console.log(message)
                 break;
-            case 'login':
+            case 'setting':
                 this.printUsers(json.data)
                 break;
             case 'init':
@@ -196,8 +196,14 @@ WS.prototype.showMessage = function (message) {
                     })
                     if(json.winner==_this.userId) {
                         console.log('You win!!!')
+                        $('#log').text('You win!!!');
+                        $('#mine span').popover({content:'You win!!!', placement :'bottom',trigger:'click',title:'Message'})
+                        $('#mine span').popover('show');
                     }else{
                         console.log('You are loser!!!')
+                        $('#log').text('You are loser!!!');
+                        $('#mine span').popover({content:'You are loser!!!', placement :'bottom',trigger:'click',title:'Message'})
+                        $('#mine span').popover('show');
                     }
                 }
                 break;

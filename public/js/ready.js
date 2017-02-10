@@ -21,14 +21,14 @@ $(document).ready(function () {
 
     $('#userId').val('User@' + Math.floor(Math.random() * 10000));
     $('#roomName').val('Room@' + Math.floor(Math.random() * 10000));
-    $('#login').click(function () {
+    $('#set').click(function () {
         var userName = $('#userId').val();
         var msg = $('#message').val();
         if (userId.length == 0) {
             alert("이름을 입력하세요!")
             return;
         }
-        client.login(userName, msg)
+        client.setting(userName, msg)
     })
     $('#logout').click(function () {
         client.logout();
@@ -65,6 +65,7 @@ $(document).ready(function () {
             client.play($(this).attr('rps'));
             $('div.rps').addClass('disable')
             $('#mine span').addClass($(this).attr('rps'))
+
         }
     })
     $('.restart').click(function () {
